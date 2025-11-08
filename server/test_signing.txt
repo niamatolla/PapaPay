@@ -1,1 +1,83 @@
-signed test
+SSH COMMIT SIGNING SETUP (MACOS) — VERIFIED GITHUB COMMITS
+
+----------------------------------------------------------------------------------------------------
+This guide explains how to configure SSH commit signing so GitHub shows “Verified” on your commits.
+---------------------------------------------------------------------------------------------------
+
+-----Generate an SSH signing key------
+ssh-keygen -t ed25519 -C "git signing key" -f ~/.ssh/id_ed25519_signing
+This creates two files:
+~/.ssh/id_ed25519_signing (private key)
+~/.ssh/id_ed25519_signing.pub (public key)
+
+------Add the public key to GitHub-----
+pbcopy < ~/.ssh/id_ed25519_signing.pub
+Then go to:
+GitHub → Settings → SSH and GPG Keys → New SSH Key
+Choose “Signing Key” as the key type.
+Paste the key and save.
+
+-----Configure Git to use SSH signing-----
+git config --global gpg.format ssh
+git config --global user.signingkey ~/.ssh/id_ed25519_signing
+git config --global commit.gpgsign true
+
+
+-------Set Git email and username to a verified GitHub email-------
+git config --global user.email "your_verified_github_email"
+git config --global user.name "your_github_username"
+Make sure this email is verified in GitHub under:
+GitHub → Settings → Emails
+
+--------Create the allowed_signers file (required for SSH signatures)--------
+rm -f ~/.ssh/allowed_signers
+echo "your_github_username $(cat ~/.ssh/id_ed25519_signing.pub)" > ~/.ssh/allowed_signers
+echo "your_verified_github_email $(cat ~/.ssh/id_ed25519_signing.pub)" >> ~/.ssh/allowed_signers
+chmod 600 ~/.ssh/allowed_signers
+git config --global gpg.ssh.allowedSignersFile ~/.ssh/allowed_signers
+Explanation:
+GitHub only verifies the signature if the principal matches your GitHub username or your verified email.
+
+-------Re-sign a previous commit if needed--------
+git commit -S --amend --no-edit --reset-author
+git push --force-with-lease
+
+-----Verify locally------
+git log --show-signature -1
+git log -1 --pretty='%h %s | %ae | sig=%G?'
+Expected results:
+Good git signature
+sig=G
+Commit email matches your verified GitHub email
+
+---------Check on GitHub--------
+Open the commit page and hard refresh:
+Cmd + Shift + R
+You should now see the green “Verified” badge.
+
+---------------
+TROUBLESHOOTING|
+---------------
+A. If GitHub shows “Unverified”:
+Ensure the key on GitHub was added as a Signing Key.
+Confirm your commit email is a verified GitHub email.
+
+B. If you see “No principal matched”:
+Add your GitHub username and verified email to allowed_signers.
+
+C. If you see “invalid key^M”:
+allowed_signers has Windows line endings. Recreate it using the commands above.
+
+D. If VS Code or GitHub Desktop doesn’t sign:
+Enable commit signing in the application settings.
+
+E. If local Git says “No signature”:
+Ensure commit.gpgsign is true and user.signingkey points to the private key.
+
+HARD REFRESH
+GitHub caches signatures.
+Refresh the page using:
+Cmd + Shift + R
+
+DONE
+Your future commits from this machine will now be automatically signed and verified.
