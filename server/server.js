@@ -7,6 +7,10 @@ import { nanoid } from 'nanoid';
 
 const app= express();
 
+//Cookie 
+const ADMIN_COOKIE='pp_admin';
+
+//Cookies & CORS for auth
 app.use(cors({
     origin:process.env.CORS_ORIGIN,
 
@@ -22,7 +26,6 @@ app.get('/api/health',(req,res) =>{
 );
 
 //create new request 
-
 app.post('/api/requests',async(req,res)=>{
 
 try{
@@ -55,7 +58,6 @@ const params =[id,requester,amt,reason,dad_mood ||null,repay_plan || null,pitch 
 await pool.execute(sql,params);
 
 //created 
-
 return res.status(201).json({id});
 
 
@@ -67,7 +69,6 @@ catch(err){
 });
 
 //GET /api/requests ->newest request is first 
-
 app.get('/api/requests', async(req, res) => {
 try{
     const[ rows] =await pool.query(
@@ -81,6 +82,77 @@ catch(err){
     console.error('GET/api/requests error:',err);
     return res.status(500).json({error:'failed to list requests'});
 
+}
+});
+
+//POST/api/admin/login 
+app.post('/api/admin/login',(req,res) =>{
+    
+const{ code }=req.body || {};
+
+if(!code) return res.status(400).json({error:'code_required'});
+
+if(code === process.env.ADMIN_CODE){
+
+    res.cookie(ADMIN_COOKIE,'1',{
+        
+        httpOnly:true,
+        sameSite: 'lax',
+        secure:false, // true in production over HTTPS
+        maxAge:1000 * 60 * 60 * 12, //12h
+
+    });
+    return res.status(200).json({ok:true});
+}
+     return res.status(401).json({error:'invalid code'});
+
+});
+
+//POST/api/admin/logout
+app.post('/api/admin/logout',(_req,res) =>{
+    
+    res.clearCookie(ADMIN_COOKIE,{sameSite:'lax',secure:false});
+    res.json({ok:true});
+});
+
+//middleware check if User has admin cookie or not 
+function requireAdmin(req, res, next){
+
+    if (req.cookies?.[ADMIN_COOKIE] ==='1') return next();
+    return res.status(401).json({error :'admin_only'});
+
+}
+
+//PATCH/api/requests/:id/decision { action:"approve" | "deny", note?:string}
+app.patch('/api/requests/:id/decision',requireAdmin,async(req,res) =>{
+
+try{
+
+    const {id }=req.params;
+    const {action ,note}=req.body || {};
+
+    if(!['approve','deny'].includes(action)){
+        return res.status(400).json({error:'action_must_be_approve_or_deny'});
+
+    }
+    
+    const newStatus =action === 'approve' ? 'approved' : 'denied';
+
+    const [result] =await pool.query(
+
+         `UPDATE requests 
+             SET status =?, decided_at=NOW(), decided_by='dad', decision_note= ?
+             WHERE id=? `,
+        
+        [newStatus,note ?? null,id]);
+
+        if(result.affectedRows === 0) return res.status(404).json({error:'not_found'});
+        const[rows]=await pool.query(`SELECT * FROM requests WHERE id =?`,[id]);
+        return res.json(rows[0]);
+}
+catch(e){
+    console.error(e);
+    return res.status(500).json({error:'server_error'});
 }
 });
 
