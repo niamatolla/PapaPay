@@ -17,10 +17,18 @@ dist/
 .DS_Store
 
 # Editor config
+
+#Ignore editor config 
 .vscode/
 
-# MySQL local sessions
+# MySQL local sessions +SQL in General
 *.sql
+
+#But keep migration SQK files inside Backend
+!server/db/
+!server/db/migrations/
+!server/db/migrations.*.sql
+
 
 # Raw heavy Postman screenshots
 *.tiff
