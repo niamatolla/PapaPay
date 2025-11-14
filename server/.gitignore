@@ -16,3 +16,11 @@ dist/
 # macOS system files
 .DS_Store
 
+# Ignore editor config
+.vscode/
+
+# Ignore MySQL local sessions
+*.sql
+
+# Ignore raw heavy Postman screenshots (we'll export PNG later)
+*.tiff
