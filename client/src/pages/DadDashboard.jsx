@@ -1,0 +1,136 @@
+// DadDashboard.jsx
+import React from "react";
+import bow from "../assets/bows/bow.png";
+
+export default function DadDashboard() {
+  // demo data (replace with API data)
+  const request = {
+    id: "1",
+    name: "Niama",
+    amount: "$45",
+    status: "Approved", // "Pending" | "Approved" | "Rejected"
+    reason: "Groceries for the week week",
+    pitch: "I promise I will cook dinner every night",
+    dadsMood: "😄 Generous",
+    repayPlan: "Pay back next Friday",
+  };
+
+  return (
+    <div className="min-h-screen w-full bg-[#f2d9db]">
+      {/* desktop frame hint (1440x1024) */}
+      <div className="mx-auto min-h-screen w-full max-w-[1440px]">
+        {/* NAVBAR */}
+        <header className="bg-[#ebbbc5] py-6">
+          <div className="mx-auto max-w-[1440px] px-10">
+            <div className="flex h-20 items-center justify-between">
+              <div className="flex items-center gap-6">
+                <img
+                  src={bow}
+                  alt=""
+                  className="h-8 w-8"
+                  draggable="false"
+                />
+
+                <h1 className="font-serifDisplay text-5xl font-normal leading-[0.95] tracking-tight text-[#a6ba4c]">
+                  PapaPay
+                </h1>
+
+                <img
+                  src={bow}
+                  alt=""
+                  className="h-8 w-8"
+                  draggable="false"
+                />
+              </div>
+
+              <button
+                type="button"
+                className="rounded-xl border-2 border-[#a6ba4c] bg-[#f2d9db] px-10 py-3 font-serifDisplay text-2xl text-[#a6ba4c] shadow-sm transition hover:brightness-95 active:scale-[0.99]"
+                onClick={() => {
+                  // TODO: hook up logout
+                  console.log("logout");
+                }}
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {/* PAGE CONTENT */}
+        <main className="px-16 py-14">
+          <h2 className="font-serifDisplay text-6xl text-[#a6ba4c]">
+            Dad Dashboard
+          </h2>
+          <p className="mt-3 text-sm text-[#c98993]">
+            Review requests and approve or deny :
+          </p>
+
+          {/* OUTER CARD */}
+          <section className="mt-10 w-full max-w-[760px] rounded-2xl border border-[#c7d07b] bg-[#f5efe3] p-10 shadow-[0_2px_0_rgba(0,0,0,0.02)]">
+            <div className="flex items-center justify-between">
+              <p className="font-serifDisplay text-3xl text-[#a6ba4c]">
+                No requests yet <span className="ml-1">💌</span>
+              </p>
+            </div>
+
+            <p className="mt-5 text-sm text-[#df9aa5]">
+              When a request is submitted, it will appear here for you to review.
+            </p>
+
+            {/* INNER CARD */}
+            <div className="mt-8 rounded-2xl border border-[#c7d07b] bg-[#f5efe3] p-8">
+              <div className="flex items-start justify-between gap-6">
+                <div className="grid w-full grid-cols-2 gap-y-4">
+                  <div className="text-xl text-[#c98993]">Name</div>
+                  <div className="text-xl text-[#c98993]">Amount</div>
+
+                  <div className="col-span-2 mt-2 grid grid-cols-[120px_1fr] gap-y-3 text-[#c98993]">
+                    <div className="text-sm">Reason :</div>
+                    <div className="text-sm">{request.reason}</div>
+
+                    <div className="text-sm">Pitch :</div>
+                    <div className="text-sm">{request.pitch}</div>
+
+                    <div className="text-sm">Dad&apos;s Mood :</div>
+                    <div className="text-sm">{request.dadsMood}</div>
+
+                    <div className="text-sm">Repay plan :</div>
+                    <div className="text-sm">{request.repayPlan}</div>
+                  </div>
+                </div>
+
+                {/* status pill */}
+                <div className="shrink-0">
+                  <span className="inline-flex items-center rounded-full bg-[#b8cf5c] px-5 py-2 font-serifDisplay text-xl text-[#6f7f2a] shadow-sm">
+                    {request.status}
+                  </span>
+                </div>
+              </div>
+
+              {/* buttons */}
+              <div className="mt-10 flex items-center justify-between px-4">
+                <button
+                  type="button"
+                  className="w-44 rounded-xl bg-[#a6ba4c] py-4 font-serifDisplay text-2xl text-[#f5efe3] shadow-sm transition hover:brightness-95 active:scale-[0.99]"
+                  onClick={() => console.log("reject", request.id)}
+                >
+                  Reject
+                </button>
+
+                <button
+                  type="button"
+                  className="w-44 rounded-xl bg-[#a6ba4c] py-4 font-serifDisplay text-2xl text-[#f5efe3] shadow-sm transition hover:brightness-95 active:scale-[0.99]"
+                  onClick={() => console.log("approve", request.id)}
+                >
+                  Approve
+                </button>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  );
+}
+
