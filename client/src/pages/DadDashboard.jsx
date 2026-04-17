@@ -62,30 +62,30 @@ export default function DadDashboard() {
           <h2 className="font-serifDisplay text-6xl text-[#a6ba4c]">
             Dad Dashboard
           </h2>
-          <p className="mt-3 text-sm text-[#c98993]">
+          <p className="mt-3 text-sm font-semibold text-[#c09086]">
             Review requests and approve or deny :
           </p>
 
           {/* OUTER CARD */}
-          <section className="mt-10 w-full max-w-[760px] rounded-2xl border border-[#c7d07b] bg-[#f5efe3] p-10 shadow-[0_2px_0_rgba(0,0,0,0.02)]">
+          <section className="mt-10 w-full max-w-[760px] rounded-2xl border border-[#bad07f]/60 bg-[#f7f0e6] p-10 shadow-[0_6px_0_rgba(215,205,160,0.55)]">
             <div className="flex items-center justify-between">
               <p className="font-serifDisplay text-3xl text-[#a6ba4c]">
                 No requests yet <span className="ml-1">💌</span>
               </p>
             </div>
 
-            <p className="mt-5 text-sm text-[#df9aa5]">
+            <p className="mt-5 text-sm text-[#eaa3a2]">
               When a request is submitted, it will appear here for you to review.
             </p>
 
             {/* INNER CARD */}
-            <div className="mt-8 rounded-2xl border border-[#c7d07b] bg-[#f5efe3] p-8">
+            <div className="mt-8 rounded-2xl border border-[#bad07f]/60 bg-[#f7f0e6] p-8">
               <div className="flex items-start justify-between gap-6">
                 <div className="grid w-full grid-cols-2 gap-y-4">
-                  <div className="text-xl text-[#c98993]">Name</div>
-                  <div className="text-xl text-[#c98993]">Amount</div>
+                  <div className="text-xl text-[#c09086]">Name</div>
+                  <div className="text-xl text-[#c09086]">Amount</div>
 
-                  <div className="col-span-2 mt-2 grid grid-cols-[120px_1fr] gap-y-3 text-[#c98993]">
+                  <div className="col-span-2 mt-2 grid grid-cols-[120px_1fr] gap-y-3 text-[#c09086]">
                     <div className="text-sm">Reason :</div>
                     <div className="text-sm">{request.reason}</div>
 
@@ -112,7 +112,7 @@ export default function DadDashboard() {
               <div className="mt-10 flex items-center justify-between px-4">
                 <button
                   type="button"
-                  className="w-44 rounded-xl bg-[#a6ba4c] py-4 font-serifDisplay text-2xl text-[#f5efe3] shadow-sm transition hover:brightness-95 active:scale-[0.99]"
+                  className="w-44 rounded-xl bg-[#a6ba4c] py-4 font-serifDisplay text-2xl text-white shadow-sm transition hover:brightness-95 active:scale-[0.99]"
                   onClick={() => console.log("reject", request.id)}
                 >
                   Reject
@@ -120,7 +120,7 @@ export default function DadDashboard() {
 
                 <button
                   type="button"
-                  className="w-44 rounded-xl bg-[#a6ba4c] py-4 font-serifDisplay text-2xl text-[#f5efe3] shadow-sm transition hover:brightness-95 active:scale-[0.99]"
+                  className="w-44 rounded-xl bg-[#a6ba4c] py-4 font-serifDisplay text-2xl text-white shadow-sm transition hover:brightness-95 active:scale-[0.99]"
                   onClick={() => console.log("approve", request.id)}
                 >
                   Approve
