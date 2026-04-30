@@ -98,7 +98,7 @@ if(code === process.env.ADMIN_CODE){
         
         httpOnly:true,
         sameSite: 'lax',
-        secure:false, // true in production over HTTPS
+        secure:false, // local dev only
         maxAge:1000 * 60 * 60 * 12, //12h
 
     });
