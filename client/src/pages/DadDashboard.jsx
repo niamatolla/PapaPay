@@ -48,7 +48,7 @@ export default function DadDashboard() {
                 type="button"
                 className="rounded-xl border-2 border-[#a6ba4c] bg-[#f2d9db] px-10 py-3 font-serifDisplay text-2xl text-[#a6ba4c] shadow-sm transition hover:brightness-95 active:scale-[0.99]"
                 onClick={() => {
-                  // TODO: hook up logout
+                
                    navigate("/dad-login");
                 }}
               >

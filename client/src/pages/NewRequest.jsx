@@ -1,8 +1,72 @@
+import { useState } from "react";
 import bow from "../assets/bows/bow.png";
 import balloons from "../assets/balloons/balloons.png";
 import { Link } from "react-router-dom";
 
+const initialForm = {
+  requester: "",
+  reason: "",
+  amount: "",
+  dad_mood: "",
+  pitch: "",
+  repay_plan: "",
+};
+
 export default function NewRequest() {
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
+  const [form, setForm] = useState(initialForm);
+
+  function handleChange(event) {
+    const { name, value } = event.target;
+    setForm((currentForm) => ({
+      ...currentForm,
+      [name]: value,
+    }));
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    try {
+      setLoading(true);
+      const response = await fetch("/api/requests", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          requester: form.requester.trim(),
+          reason: form.reason.trim(),
+          amount: Number(form.amount),
+          dad_mood: form.dad_mood.trim(),
+          pitch: form.pitch.trim(),
+          repay_plan: form.repay_plan.trim(),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to submit request.");
+      }
+
+      setSuccess(`Request submitted. ID: ${data.id}`);
+      setForm(initialForm);
+    } catch (submitError) {
+      setError(
+        submitError instanceof Error
+          ? submitError.message
+          : "Something went wrong. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="min-h-screen w-full bg-[#f2d9db]" >
        {/* HEADER  */}
@@ -46,22 +110,49 @@ export default function NewRequest() {
               Fill out the details to request money from Dad :
             </p>
 
-            <form className="mt-10 space-y-7">
+            <form onSubmit={handleSubmit} className="mt-10 space-y-7">
               <Field label="Requester">
-                <input className={inputClass} placeholder="e.g., Niama" />
+                <input
+                  name="requester"
+                  value={form.requester}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="e.g., Niama"
+                  required
+                />
               </Field>
 
               <Field label="Reason">
-                <input className={inputClass} placeholder="One short sentence" />
+                <input
+                  name="reason"
+                  value={form.reason}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="One short sentence"
+                  required
+                />
               </Field>
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <Field label="Amount">
-                  <input type="number" className={inputClass} placeholder="25" />
+                  <input
+                    type="number"
+                    name="amount"
+                    value={form.amount}
+                    onChange={handleChange}
+                    className={inputClass}
+                    placeholder="25"
+                    min="0"
+                    step="0.01"
+                    required
+                  />
                 </Field>
 
                 <Field label="Dad’s mood">
                   <input
+                    name="dad_mood"
+                    value={form.dad_mood}
+                    onChange={handleChange}
                     className={inputClass}
                     placeholder="generous / grumpy..."
                   />
@@ -71,13 +162,20 @@ export default function NewRequest() {
               <Field label="Pitch">
                 <textarea
                   rows={5}
+                  name="pitch"
+                  value={form.pitch}
+                  onChange={handleChange}
                   className={`${inputClass} resize-none`}
                   placeholder="Make it persuasive (and funny)."
+                  required
                 />
               </Field>
 
               <Field label="Repay Plan">
                 <input
+                  name="repay_plan"
+                  value={form.repay_plan}
+                  onChange={handleChange}
                   className={inputClass}
                   placeholder="e.g., pay back next Friday"
                 />
@@ -85,11 +183,17 @@ export default function NewRequest() {
 
               <div className="flex justify-center pt-4">
                 <button
-                  type="button"
+                  type="submit"
+                  disabled={loading}
                   className="w-64 rounded-2xl bg-[#aab44a] py-3.5 text-base font-semibold text-white shadow-sm transition hover:opacity-90"
                 >
-                  Submit Request
+                  {loading ? "Submitting..." : "Submit Request"}
                 </button>
+              </div>
+
+              <div className="min-h-[24px] text-center text-sm font-medium">
+                {success ? <p className="text-[#6f7f2a]">{success}</p> : null}
+                {error ? <p className="text-[#d66b7c]">{error}</p> : null}
               </div>
             </form>
           </section>

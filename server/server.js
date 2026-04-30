@@ -31,6 +31,15 @@ app.post('/api/requests',async(req,res)=>{
 try{
     const{ requester,amount,reason,pitch,dad_mood,repay_plan}=req.body || {};
 
+    console.log('POST /api/requests received', {
+        requester,
+        amount,
+        reason,
+        dad_mood,
+        repay_plan,
+        hasPitch: Boolean(pitch),
+    });
+
     //basic validations
 
     if(!requester || !reason || !pitch || amount === undefined ){
@@ -55,9 +64,17 @@ try{
 
 const params =[id,requester,amt,reason,dad_mood ||null,repay_plan || null,pitch ];
 
-await pool.execute(sql,params);
+    console.log('POST /api/requests executing SQL', {
+        sql: sql.trim(),
+        params,
+    });
+
+    const [result] = await pool.execute(sql,params);
+
+    console.log('POST /api/requests SQL result', result);
 
 //created 
+    console.log('POST /api/requests returning response', { id });
 return res.status(201).json({id});
 
 
