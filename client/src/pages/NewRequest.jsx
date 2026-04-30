@@ -1,5 +1,6 @@
 import bow from "../assets/bows/bow.png";
 import balloons from "../assets/balloons/balloons.png";
+import { Link } from "react-router-dom";
 
 export default function NewRequest() {
   return (
@@ -8,7 +9,7 @@ export default function NewRequest() {
        <header className ="bg-[#ebbbc5] py-6">
        <div className="mx-auto  max-w-[1440px]" >
        
-          <div className="flex h-20 items-center justify-start ">
+          <div className="flex h-20 items-center justify-between px-6">
             <div className="flex items-center gap-6 ">
              <img src={bow} alt="" className="h-8 w-8" draggable="false" />
 
@@ -18,6 +19,13 @@ export default function NewRequest() {
 
           <img src={bow} alt="" className="h-8 w-8" draggable="false" />
          </div>
+
+         <Link
+           to="/dad-login"
+           className="inline-flex items-center rounded-full border-2 border-[#a6ba4c] bg-[#f7f0e6] px-4 py-1.5 text-sm font-semibold text-[#6f7f2a] shadow-[0_2px_0_rgba(0,0,0,0.08)] transition hover:-translate-y-0.5 hover:shadow-[0_4px_0_rgba(0,0,0,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a6ba4c]/50"
+         >
+           Dad Login -&gt;
+         </Link>
         </div>
         </div>
         </header>
