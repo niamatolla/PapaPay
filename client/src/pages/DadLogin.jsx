@@ -1,4 +1,4 @@
-
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 import bow from "../assets/bows/bow.png";
@@ -6,6 +6,7 @@ import tape from "../assets/tape/tape.png";
 import totoro from "../assets/totoro/totoro.png"; 
 
 export default function DadLogin({ onSuccess }) {
+  const navigate = useNavigate();
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -38,7 +39,11 @@ export default function DadLogin({ onSuccess }) {
       }
 
       setLoading(false);
-      onSuccess?.(); // optional callback to switch to dashboard screen
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        navigate("/dad-dashboard");
+      }
     } catch (err) {
       setLoading(false);
       setError("Something went wrong. Please try again.");
