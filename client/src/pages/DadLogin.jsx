@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import bow from "../assets/bows/bow.png";
 import tape from "../assets/tape/tape.png"; 
@@ -10,6 +10,18 @@ export default function DadLogin({ onSuccess }) {
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetch("/api/dad/me", {
+      credentials: "include",
+    })
+      .then((res) => {
+        if (res.ok) {
+          navigate("/dad-dashboard", { replace: true });
+        }
+      })
+      .catch(() => {});
+  }, [navigate]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -42,7 +54,7 @@ export default function DadLogin({ onSuccess }) {
       if (onSuccess) {
         onSuccess();
       } else {
-        navigate("/dad-dashboard");
+        navigate("/dad-dashboard", { replace: true });
       }
     } catch (err) {
       setLoading(false);

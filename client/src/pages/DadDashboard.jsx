@@ -28,7 +28,7 @@ export default function DadDashboard() {
   useEffect(() => {
     async function fetchRequests() {
       try {
-        const res = await fetch("http://localhost:5174/api/requests");
+        const res = await fetch("/api/requests");
 
         if (!res.ok) {
           throw new Error("Failed to fetch requests");
@@ -59,7 +59,7 @@ export default function DadDashboard() {
   async function handleDecision(requestId, action) {
     setDecidingId(requestId);
     try {
-      const res = await fetch(`http://localhost:5174/api/requests/${requestId}/decision`, {
+      const res = await fetch(`/api/requests/${requestId}/decision`, {
         method: "PATCH",
         credentials: "include",
         headers: {
@@ -85,6 +85,17 @@ export default function DadDashboard() {
       alert(`Could not ${action} request. Please try again.`);
     } finally {
       setDecidingId(null);
+    }
+  }
+
+  async function handleLogout() {
+    try {
+      await fetch("/api/admin/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } finally {
+      navigate("/dad-login", { replace: true });
     }
   }
 
@@ -120,10 +131,7 @@ export default function DadDashboard() {
               <button
                 type="button"
                 className="rounded-xl border-2 border-[#a6ba4c] bg-[#f2d9db] px-10 py-3 font-serifDisplay text-2xl text-[#a6ba4c] shadow-sm transition hover:brightness-95 active:scale-[0.99]"
-                onClick={() => {
-                
-                   navigate("/dad-login");
-                }}
+                onClick={handleLogout}
               >
                 Logout
               </button>

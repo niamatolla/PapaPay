@@ -9,6 +9,13 @@ const app= express();
 
 //Cookie 
 const ADMIN_COOKIE='pp_admin';
+const DAD_AUTH_COOKIE='dadAuth';
+const authCookieOptions = {
+    httpOnly:true,
+    sameSite: 'lax',
+    secure:false,
+    maxAge:1000 * 60 * 60 * 12,
+};
 
 //Cookies & CORS for auth
 app.use(cors({
@@ -111,14 +118,8 @@ if(!code) return res.status(400).json({error:'code_required'});
 
 if(code === process.env.ADMIN_CODE){
 
-    res.cookie(ADMIN_COOKIE,'1',{
-        
-        httpOnly:true,
-        sameSite: 'lax',
-        secure:false, // local dev only
-        maxAge:1000 * 60 * 60 * 12, //12h
-
-    });
+    res.cookie(ADMIN_COOKIE,'1',authCookieOptions);
+    res.cookie(DAD_AUTH_COOKIE,'true',authCookieOptions);
     return res.status(200).json({ok:true});
 }
      return res.status(401).json({error:'invalid code'});
@@ -129,11 +130,12 @@ if(code === process.env.ADMIN_CODE){
 app.post('/api/admin/logout',(_req,res) =>{
     
     res.clearCookie(ADMIN_COOKIE,{sameSite:'lax',secure:false});
+    res.clearCookie(DAD_AUTH_COOKIE,{sameSite:'lax',secure:false});
     res.json({ok:true});
 });
 
 app.get('/api/dad/me', (req, res) => {
-    const hasDadAuthCookie = req.cookies?.dadAuth === 'true';
+    const hasDadAuthCookie = req.cookies?.[DAD_AUTH_COOKIE] === 'true';
     const hasAdminCookie = req.cookies?.[ADMIN_COOKIE] === '1';
 
     if (!hasDadAuthCookie && !hasAdminCookie) {
