@@ -103,8 +103,29 @@ CORS_ORIGIN=http://localhost:5173
 - MySQL host on Railway
 - Update environment variables for production CORS, API URLs, and secure cookies over HTTPS
 
-## Roadmap
-- Add richer dashboard analytics
-- Add request filtering and search
-- Improve form validation and error handling UX
-- Finalize cloud deployment and custom domain
+## Prioritized Next Steps
+
+Recommended first implementation: Better validation and list filtering/pagination.
+
+### Priority 1 (MVP Reliability)
+- Better validation plus list filters and pagination (estimated 2 to 4 hours)
+  - Add stronger payload validation in the API
+  - Support `status`, `limit`, and `offset` query parameters in request listing
+- Real SQL migrations in the repository (estimated 1 to 2 hours)
+  - Add versioned migration files under `server/db/migrations`
+  - Document migration run steps
+- Error-state UX cleanup (estimated 1 to 2 hours)
+  - Standardize user-facing error messages in the request form and dashboard actions
+
+Estimated Priority 1 total: 4 to 8 hours
+
+### Priority 2 (Nice to Have)
+- Minimal tests and CI (estimated 2 to 4 hours)
+  - Add one backend API smoke test
+  - Add one frontend login/dashboard flow test
+  - Add CI workflow for lint and tests
+- Deployment and environment hardening (estimated 1 to 3 hours)
+  - Finalize production CORS and secure cookie settings
+  - Add deployment checklist for Vercel, Render, and Railway
+
+Estimated Priority 2 total: 3 to 7 hours
