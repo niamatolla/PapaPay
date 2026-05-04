@@ -8,6 +8,22 @@ export default function DadDashboard() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [decidingId, setDecidingId] = useState(null);
+
+  function normalizeRequest(request) {
+    return {
+      id: request.id,
+      requester: request.requester,
+      amount: request.amount,
+      reason: request.reason,
+      pitch: request.pitch,
+      dadsMood: request.dad_mood,
+      repayPlan: request.repay_plan,
+      // Backend stores "denied". UI shows "rejected" to match product wording.
+      status: request.status === "denied" ? "rejected" : request.status,
+      createdAt: request.created_at,
+    };
+  }
 
   useEffect(() => {
     async function fetchRequests() {
@@ -19,19 +35,7 @@ export default function DadDashboard() {
         }
 
         const data = await res.json();
-        const normalizedRequests = Array.isArray(data)
-          ? data.map((request) => ({
-              id: request.id,
-              requester: request.requester,
-              amount: request.amount,
-              reason: request.reason,
-              pitch: request.pitch,
-              dadsMood: request.dad_mood,
-              repayPlan: request.repay_plan,
-              status: request.status,
-              createdAt: request.created_at,
-            }))
-          : [];
+        const normalizedRequests = Array.isArray(data) ? data.map(normalizeRequest) : [];
 
         setRequests(normalizedRequests);
       } catch (err) {
@@ -51,6 +55,39 @@ export default function DadDashboard() {
       maximumFractionDigits: 0,
     }).format(Number(amount) || 0);
   }
+
+  async function handleDecision(requestId, action) {
+    setDecidingId(requestId);
+    try {
+      const res = await fetch(`http://localhost:5174/api/requests/${requestId}/decision`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ action }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`Failed to ${action} request`);
+      }
+
+      const updatedRequest = await res.json();
+      const normalizedUpdatedRequest = normalizeRequest(updatedRequest);
+
+      setRequests((currentRequests) =>
+        currentRequests.map((req) =>
+          req.id === requestId ? { ...req, ...normalizedUpdatedRequest } : req
+        )
+      );
+    } catch (err) {
+      console.error(err);
+      alert(`Could not ${action} request. Please try again.`);
+    } finally {
+      setDecidingId(null);
+    }
+  }
+
 
   return (
     <div className="min-h-screen w-full bg-[#f2d9db]">
@@ -183,17 +220,19 @@ export default function DadDashboard() {
                       <button
                         type="button"
                         className="w-44 rounded-xl bg-[#a6ba4c] py-4 font-serifDisplay text-2xl text-white shadow-sm transition hover:brightness-95 active:scale-[0.99]"
-                        onClick={() => console.log("reject", request.id)}
+                        disabled={decidingId === request.id || request.status !== "pending"}
+                        onClick={() => handleDecision(request.id, "deny")}
                       >
-                        Reject
+                        {decidingId === request.id ? "Working..." : "Reject"}
                       </button>
 
                       <button
                         type="button"
                         className="w-44 rounded-xl bg-[#a6ba4c] py-4 font-serifDisplay text-2xl text-white shadow-sm transition hover:brightness-95 active:scale-[0.99]"
-                        onClick={() => console.log("approve", request.id)}
+                        disabled={decidingId === request.id || request.status !== "pending"}
+                        onClick={() => handleDecision(request.id, "approve")}
                       >
-                        Approve
+                        {decidingId === request.id ? "Working..." : "Approve"}
                       </button>
                     </div>
                   </div>
