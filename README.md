@@ -1,4 +1,7 @@
 ## Overview
+
+## Demo: 
+[![Watch the demo](https://img.youtube.com/vi/ebZYDfeHJ3w/0.jpg)](https://youtu.be/ebZYDfeHJ3w)
 **PapaPay💸** is a tiny full-stack app to request money from Dad (with jokes) and a real approve/deny workflow.
 
 **Stack:** React (Vite) • Node/Express • MySQL • Cookie session (Dad passcode)  
