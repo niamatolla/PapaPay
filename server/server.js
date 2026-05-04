@@ -132,6 +132,17 @@ app.post('/api/admin/logout',(_req,res) =>{
     res.json({ok:true});
 });
 
+app.get('/api/dad/me', (req, res) => {
+    const hasDadAuthCookie = req.cookies?.dadAuth === 'true';
+    const hasAdminCookie = req.cookies?.[ADMIN_COOKIE] === '1';
+
+    if (!hasDadAuthCookie && !hasAdminCookie) {
+        return res.status(401).json({ error: 'Not logged in' });
+    }
+
+    return res.json({ loggedIn: true });
+});
+
 //middleware check if User has admin cookie or not 
 function requireAdmin(req, res, next){
 
