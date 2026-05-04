@@ -131,6 +131,8 @@ export default function DadLogin({ onSuccess }) {
 
               <Field label="Admin code">
             <input
+              type="password"
+              autoComplete="current-password"
               value={code}
              onChange={(e) => setCode(e.target.value)}
              placeholder="Enter admin code"
