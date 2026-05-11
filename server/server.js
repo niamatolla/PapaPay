@@ -157,9 +157,13 @@ if(code === process.env.ADMIN_CODE){
 
 //POST/api/admin/logout
 app.post('/api/admin/logout',(_req,res) =>{
-    
-    res.clearCookie(ADMIN_COOKIE,{sameSite:'lax',secure:false});
-    res.clearCookie(DAD_AUTH_COOKIE,{sameSite:'lax',secure:false});
+    const clearOptions = {
+        httpOnly: true,
+        sameSite: isProduction ? 'none' : 'lax',
+        secure: isProduction,
+    };
+    res.clearCookie(ADMIN_COOKIE, clearOptions);
+    res.clearCookie(DAD_AUTH_COOKIE, clearOptions);
     res.json({ok:true});
 });
 
