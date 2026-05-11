@@ -57,9 +57,17 @@ app.use(cookieParser());
 
 //Health check route 
 app.get('/api/health',(req,res) =>{
-    res.json({ok :true,env:process.env.NODE_ENV || 'local'});
-}
-);
+    res.json({
+        ok: true,
+        env: process.env.NODE_ENV || 'local',
+        isProduction,
+        cookieConfig: {
+            sameSite: isProduction ? 'none' : 'lax',
+            secure: isProduction,
+        },
+        receivedCookies: req.cookies,
+    });
+});
 
 //create new request 
 app.post('/api/requests',async(req,res)=>{
