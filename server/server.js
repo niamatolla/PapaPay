@@ -15,9 +15,13 @@ const DAD_AUTH_COOKIE='dadAuth';
 // In development (localhost) cookies are not secure.
 const isProduction = process.env.NODE_ENV === 'production';
 const authCookieOptions = {
-    httpOnly: true,  // Prevents JavaScript from accessing the cookie (security)
-    sameSite: 'lax', // Allows cross-site requests with safe methods
-    secure: isProduction, // HTTPS only in production; http allowed in development
+    httpOnly: true,
+    // cross-site cookie requirements:
+    // - sameSite:'none' is required for cookies to be sent from Vercel to Render
+    // - secure:true is required whenever sameSite:'none' (HTTPS only)
+    // In development, 'lax' + non-secure works fine on localhost
+    sameSite: isProduction ? 'none' : 'lax',
+    secure: isProduction,
     maxAge: 1000 * 60 * 60 * 12, // 12 hours
 };
 
