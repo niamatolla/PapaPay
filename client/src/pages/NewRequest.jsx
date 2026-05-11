@@ -248,7 +248,7 @@ export default function NewRequest() {
       <img
         src={edge}
         alt=""
-        className="pointer-events-none absolute bottom-0 right-0 hidden w-44 rotate-90 opacity-90 lg:block"
+        className="pointer-events-none absolute bottom-0 right-0 hidden w-44 rotate-180 opacity-90 lg:block"
         draggable="false"
       />
     </div>
