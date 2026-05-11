@@ -11,8 +11,8 @@ const app= express();
 const ADMIN_COOKIE='pp_admin';
 const DAD_AUTH_COOKIE='dadAuth';
 
-// In production (Render), use secure cookies over HTTPS.
-// In development (localhost), cookies are not secure.
+// In production (Render) use secure cookies over HTTPS.
+// In development (localhost) cookies are not secure.
 const isProduction = process.env.NODE_ENV === 'production';
 const authCookieOptions = {
     httpOnly: true,  // Prevents JavaScript from accessing the cookie (security)
@@ -24,8 +24,25 @@ const authCookieOptions = {
 // CORS Configuration for production and development
 // - Development: allows requests from http://localhost:5173
 // - Production: allows requests from Vercel frontend (https://papa-pay.vercel.app)
+const allowedOrigins = [
+    'http://localhost:5173',           // Local development
+    'http://localhost:5174',           // Local dev server
+    'https://papa-pay.vercel.app',     // Production Vercel frontend
+    process.env.FRONTEND_URL,          // Additional frontend URL from env (production)
+    process.env.CORS_ORIGIN,           // Fallback from env (development)
+].filter(Boolean); // Remove undefined/null values
+
 app.use(cors({
-    origin: process.env.FRONTEND_URL || process.env.CORS_ORIGIN || 'http://localhost:5173',
+    origin: (origin, callback) => {
+        // Allow requests with no origin (mobile apps, curl requests, etc)
+        if (!origin) return callback(null, true);
+        
+        if (allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error(`CORS not allowed for origin: ${origin}`));
+        }
+    },
     credentials: true, // Allow cookies and authentication headers
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
