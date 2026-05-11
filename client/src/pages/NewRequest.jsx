@@ -1,6 +1,7 @@
 import { useState } from "react";
 import bow from "../assets/bows/bow.png";
 import balloons from "../assets/balloons/balloons.png";
+import edge from "../assets/edges/edge.png";
 import { Link } from "react-router-dom";
 
 const initialForm = {
@@ -69,7 +70,7 @@ export default function NewRequest() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#f2d9db]" >
+    <div className="relative min-h-screen w-full overflow-x-hidden bg-[#f2d9db]" >
        {/* HEADER  */}
        <header className ="bg-[#ebbbc5] py-6">
        <div className="mx-auto  max-w-[1440px]" >
@@ -243,6 +244,13 @@ export default function NewRequest() {
         </div>
       </div>
       </main>
+
+      <img
+        src={edge}
+        alt=""
+        className="pointer-events-none absolute right-0 top-1/2 hidden w-44 -translate-y-1/2 rotate-90 opacity-90 lg:block"
+        draggable="false"
+      />
     </div>
   );
 }
