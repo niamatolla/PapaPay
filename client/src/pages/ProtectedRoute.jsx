@@ -7,7 +7,7 @@ export default function ProtectedRoute({ children }) {
   const location = useLocation();
 
   useEffect(() => {
-    fetch("/api/dad/me", {
+    fetch(`${import.meta.env.VITE_API_URL}/api/dad/me`, {
       credentials: "include",
     })
       .then((res) => {

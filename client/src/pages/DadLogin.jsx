@@ -12,7 +12,7 @@ export default function DadLogin({ onSuccess }) {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch("/api/dad/me", {
+    fetch(`${import.meta.env.VITE_API_URL}/api/dad/me`, {
       credentials: "include",
     })
       .then((res) => {
@@ -37,7 +37,7 @@ export default function DadLogin({ onSuccess }) {
 
     
       // POST /api/admin/
-      const res = await fetch("/api/admin/login", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

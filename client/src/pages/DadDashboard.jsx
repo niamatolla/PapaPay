@@ -28,7 +28,9 @@ export default function DadDashboard() {
   useEffect(() => {
     async function fetchRequests() {
       try {
-        const res = await fetch("/api/requests");
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/requests`, {
+          credentials: "include",
+        });
 
         if (!res.ok) {
           throw new Error("Failed to fetch requests");
@@ -59,7 +61,7 @@ export default function DadDashboard() {
   async function handleDecision(requestId, action) {
     setDecidingId(requestId);
     try {
-      const res = await fetch(`/api/requests/${requestId}/decision`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/requests/${requestId}/decision`, {
         method: "PATCH",
         credentials: "include",
         headers: {
@@ -90,7 +92,7 @@ export default function DadDashboard() {
 
   async function handleLogout() {
     try {
-      await fetch("/api/admin/logout", {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/admin/logout`, {
         method: "POST",
         credentials: "include",
       });

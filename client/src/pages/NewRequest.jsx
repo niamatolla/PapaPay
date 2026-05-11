@@ -33,11 +33,12 @@ export default function NewRequest() {
 
     try {
       setLoading(true);
-      const response = await fetch("/api/requests", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/requests`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           requester: form.requester.trim(),
           reason: form.reason.trim(),
