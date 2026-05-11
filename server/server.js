@@ -7,22 +7,30 @@ import { nanoid } from 'nanoid';
 
 const app= express();
 
-//Cookie 
+//Cookie configuration
 const ADMIN_COOKIE='pp_admin';
 const DAD_AUTH_COOKIE='dadAuth';
+
+// In production (Render), use secure cookies over HTTPS.
+// In development (localhost), cookies are not secure.
+const isProduction = process.env.NODE_ENV === 'production';
 const authCookieOptions = {
-    httpOnly:true,
-    sameSite: 'lax',
-    secure:false,
-    maxAge:1000 * 60 * 60 * 12,
+    httpOnly: true,  // Prevents JavaScript from accessing the cookie (security)
+    sameSite: 'lax', // Allows cross-site requests with safe methods
+    secure: isProduction, // HTTPS only in production; http allowed in development
+    maxAge: 1000 * 60 * 60 * 12, // 12 hours
 };
 
-//Cookies & CORS for auth
+// CORS Configuration for production and development
+// - Development: allows requests from http://localhost:5173
+// - Production: allows requests from Vercel frontend (https://papa-pay.vercel.app)
 app.use(cors({
-    origin:process.env.CORS_ORIGIN,
-
-    credentials:true,
+    origin: process.env.FRONTEND_URL || process.env.CORS_ORIGIN || 'http://localhost:5173',
+    credentials: true, // Allow cookies and authentication headers
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
 app.use(express.json());
 app.use(cookieParser());
 
