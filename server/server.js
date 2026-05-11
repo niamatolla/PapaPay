@@ -1,29 +1,16 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import cookieParser from 'cookie-parser';
+import jwt from 'jsonwebtoken';
 import { pool } from './db.js';
 import { nanoid } from 'nanoid';
 
 const app= express();
 
-//Cookie configuration
-const ADMIN_COOKIE='pp_admin';
-const DAD_AUTH_COOKIE='dadAuth';
-
-// In production (Render) use secure cookies over HTTPS.
-// In development (localhost) cookies are not secure.
-const isProduction = process.env.NODE_ENV === 'production';
-const authCookieOptions = {
-    httpOnly: true,
-    // cross-site cookie requirements:
-    // - sameSite:'none' is required for cookies to be sent from Vercel to Render
-    // - secure:true is required whenever sameSite:'none' (HTTPS only)
-    // In development, 'lax' + non-secure works fine on localhost
-    sameSite: isProduction ? 'none' : 'lax',
-    secure: isProduction,
-    maxAge: 1000 * 60 * 60 * 12, // 12 hours
-};
+// JWT-based auth — works cross-origin without cookie restrictions
+// Token is stored in localStorage on the frontend and sent as Authorization: Bearer <token>
+const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-in-production';
+const JWT_EXPIRY = '12h';
 
 // CORS Configuration for production and development
 // - Development: allows requests from http://localhost:5173
@@ -53,7 +40,6 @@ app.use(cors({
 }));
 
 app.use(express.json());
-app.use(cookieParser());
 
 //Health check route 
 app.get('/api/health',(req,res) =>{
@@ -146,52 +132,52 @@ catch(err){
 }
 });
 
-//POST/api/admin/login 
+//POST/api/admin/login
 app.post('/api/admin/login',(req,res) =>{
-    
-const{ code }=req.body || {};
+    const { code } = req.body || {};
 
-if(!code) return res.status(400).json({error:'code_required'});
+    if (!code) return res.status(400).json({ error: 'code_required' });
 
-if(code === process.env.ADMIN_CODE){
-
-    res.cookie(ADMIN_COOKIE,'1',authCookieOptions);
-    res.cookie(DAD_AUTH_COOKIE,'true',authCookieOptions);
-    return res.status(200).json({ok:true});
-}
-     return res.status(401).json({error:'invalid code'});
-
+    if (code === process.env.ADMIN_CODE) {
+        const token = jwt.sign({ role: 'admin' }, JWT_SECRET, { expiresIn: JWT_EXPIRY });
+        return res.status(200).json({ ok: true, token });
+    }
+    return res.status(401).json({ error: 'invalid code' });
 });
 
-//POST/api/admin/logout
+//POST/api/admin/logout — token is stateless; client just deletes it from localStorage
 app.post('/api/admin/logout',(_req,res) =>{
-    const clearOptions = {
-        httpOnly: true,
-        sameSite: isProduction ? 'none' : 'lax',
-        secure: isProduction,
-    };
-    res.clearCookie(ADMIN_COOKIE, clearOptions);
-    res.clearCookie(DAD_AUTH_COOKIE, clearOptions);
-    res.json({ok:true});
+    res.json({ ok: true });
 });
 
 app.get('/api/dad/me', (req, res) => {
-    const hasDadAuthCookie = req.cookies?.[DAD_AUTH_COOKIE] === 'true';
-    const hasAdminCookie = req.cookies?.[ADMIN_COOKIE] === '1';
+    const authHeader = req.headers['authorization'] || '';
+    const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
 
-    if (!hasDadAuthCookie && !hasAdminCookie) {
-        return res.status(401).json({ error: 'Not logged in' });
+    if (!token) return res.status(401).json({ error: 'Not logged in' });
+
+    try {
+        jwt.verify(token, JWT_SECRET);
+        return res.json({ loggedIn: true });
+    } catch {
+        return res.status(401).json({ error: 'Invalid or expired token' });
     }
-
-    return res.json({ loggedIn: true });
 });
 
-//middleware check if User has admin cookie or not 
-function requireAdmin(req, res, next){
+// Middleware: verify JWT token from Authorization header
+function requireAdmin(req, res, next) {
+    const authHeader = req.headers['authorization'] || '';
+    const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
 
-    if (req.cookies?.[ADMIN_COOKIE] ==='1') return next();
-    return res.status(401).json({error :'admin_only'});
+    if (!token) return res.status(401).json({ error: 'admin_only' });
 
+    try {
+        const payload = jwt.verify(token, JWT_SECRET);
+        if (payload.role !== 'admin') return res.status(403).json({ error: 'forbidden' });
+        next();
+    } catch {
+        return res.status(401).json({ error: 'invalid_token' });
+    }
 }
 
 //PATCH/api/requests/:id/decision { action:"approve" | "deny", note?:string}

@@ -28,8 +28,9 @@ export default function DadDashboard() {
   useEffect(() => {
     async function fetchRequests() {
       try {
+        const token = localStorage.getItem('papapay_token');
         const res = await fetch(`${import.meta.env.VITE_API_URL}/api/requests`, {
-          credentials: "include",
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         if (!res.ok) {
@@ -61,11 +62,12 @@ export default function DadDashboard() {
   async function handleDecision(requestId, action) {
     setDecidingId(requestId);
     try {
+      const token = localStorage.getItem('papapay_token');
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/requests/${requestId}/decision`, {
         method: "PATCH",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ action }),
       });
@@ -92,11 +94,13 @@ export default function DadDashboard() {
 
   async function handleLogout() {
     try {
+      const token = localStorage.getItem('papapay_token');
       await fetch(`${import.meta.env.VITE_API_URL}/api/admin/logout`, {
         method: "POST",
-        credentials: "include",
+        headers: { Authorization: `Bearer ${token}` },
       });
     } finally {
+      localStorage.removeItem('papapay_token');
       navigate("/dad-login", { replace: true });
     }
   }

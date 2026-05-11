@@ -12,8 +12,10 @@ export default function DadLogin({ onSuccess }) {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    const token = localStorage.getItem('papapay_token');
+    if (!token) return;
     fetch(`${import.meta.env.VITE_API_URL}/api/dad/me`, {
-      credentials: "include",
+      headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
         if (res.ok) {
@@ -40,8 +42,7 @@ export default function DadLogin({ onSuccess }) {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({  code }),
+        body: JSON.stringify({ code }),
       });
 
       if (!res.ok) {
@@ -49,6 +50,9 @@ export default function DadLogin({ onSuccess }) {
         setLoading(false);
         return;
       }
+
+      const data = await res.json();
+      localStorage.setItem('papapay_token', data.token);
 
       setLoading(false);
       if (onSuccess) {

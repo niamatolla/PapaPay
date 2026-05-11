@@ -7,8 +7,13 @@ export default function ProtectedRoute({ children }) {
   const location = useLocation();
 
   useEffect(() => {
+    const token = localStorage.getItem('papapay_token');
+    if (!token) {
+      setLoading(false);
+      return;
+    }
     fetch(`${import.meta.env.VITE_API_URL}/api/dad/me`, {
-      credentials: "include",
+      headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
         if (res.ok) {
