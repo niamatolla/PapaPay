@@ -1,7 +1,7 @@
 import { useState } from "react";
 import bow from "../assets/bows/bow.png";
 import balloons from "../assets/balloons/balloons.png";
-import edge from "../assets/edges/edge.png";
+import edge from "../assets/edge/edge.png";
 import { Link } from "react-router-dom";
 
 const initialForm = {
