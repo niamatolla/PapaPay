@@ -196,7 +196,15 @@ export default function DadDashboard() {
                       </p>
                     </div>
 
-                    <span className="inline-flex items-center rounded-full bg-[#b8cf5c] px-5 py-2 font-serifDisplay text-xl capitalize text-[#6f7f2a] shadow-sm">
+                    <span className={`inline-flex items-center rounded-full px-5 py-2 font-serifDisplay text-xl capitalize shadow-sm ${
+                      request.status === 'rejected'
+                        ? 'border-2 border-[#f6f1e7] bg-[#eaa3a2] text-white'
+                        : request.status === 'pending'
+                        ? 'border-2 border-[#f6f1e7] bg-[#f6f1e7] text-[#a6ba4c]'
+                        : request.status === 'approved'
+                        ? 'bg-[#badd7f] text-[#6f7f2a]'
+                        : 'bg-[#b8cf5c] text-[#6f7f2a]'
+                    }`}>
                       {request.status}
                     </span>
                   </div>
