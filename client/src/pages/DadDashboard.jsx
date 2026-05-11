@@ -200,7 +200,7 @@ export default function DadDashboard() {
                       request.status === 'rejected'
                         ? 'border-2 border-[#f6f1e7] bg-[#eaa3a2] text-white'
                         : request.status === 'pending'
-                        ? 'border-2 border-[#f6f1e7] bg-[#f6f1e7] text-[#a6ba4c]'
+                        ? 'border-2 border-[#3E8440] bg-[#f6f1e7] text-[#3E8440]'
                         : request.status === 'approved'
                         ? 'bg-[#badd7f] text-[#6f7f2a]'
                         : 'bg-[#b8cf5c] text-[#6f7f2a]'
